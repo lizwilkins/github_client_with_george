@@ -1,20 +1,27 @@
+require './ui_helper'
+
 def welcome
   puts "Welcome to the Github command-line client."
-  menu
+  login_info = login
+  menu(login_info)
 end
 
-def menu
+def menu(login_info)
   choice = nil
   until choice == 'e'
-    puts "What would you like to do?"
-    puts "Press 'l' to list your Gists, 'c' to create a new Gist, 'v' to view a Gist, 'u' to update a Gist, or 'd' to delete a Gist."
+    puts "What would you like to do:"
+    puts "Press 'l' to list your Gists."
+    puts "Press 'c' to create a new Gist."
+    puts "Press 'v' to view a Gist."
+    puts "Press 'u' to update a Gist."
+    puts "Press 'd' to delete a Gist."
     puts "Press 'e' to exit."
 
     case choice = gets.chomp
     when 'l'
       list
     when 'c'
-      create
+      create(login_info)
     when 'v'
       view
     when 'u'
@@ -29,10 +36,19 @@ def menu
   end
 end
 
-def create
+def login
+  print "Username:  "
+  username = gets.chomp
+  print "Password:  "
+  password =  STDIN.noecho(&:gets).chomp
+  puts ''
+  {:username => username, :password => password}
+end
+
+def create(login_info)
   public_attribute = nil
   while public_attribute.nil?
-    puts "Would you like this Gist to be public? Type 'y' or 'n'."
+    print "Would you like this Gist to be public (y/n): "
     public_attribute = gets.chomp
     case public_attribute
     when 'y'
@@ -41,6 +57,7 @@ def create
       public_attribute = false
     else
       puts "That wasn't a valid choice."
+      public_attribute = nil
     end
   end
   puts "Type a description for the Gist, or hit Enter for no description."
@@ -51,7 +68,7 @@ def create
   content = gets.chomp
   files = {filename => {:content => content}}
 
-  Gist.create(:public => public_attribute, :description => description, :files => files)
+  Gist.create({:public => public_attribute, :description => description, :files => files}, login_info)
 end
 
 welcome
