@@ -29,6 +29,10 @@ describe Gist do
       gist.description.should eq "a test gist"
     end
 
+    it 'returns the content for a gist' do
+      gist = Gist.new(gist_attributes)
+      gist.content.should eq "a test gist"
+    end
   end
 
   context '.create' do
@@ -68,10 +72,11 @@ describe Gist do
 
   context '.delete' do #Destroy
     it 'DELETEs a Gist in the user\'s account' do
-      stub = stub_request(:delete, "https://username:password@api.github.com/gists/282322").
+      stub = stub_request(:delete, "https://username:password@api.github.com/gists/5190069").
          with(:headers => {'Accept'=>'*/*', 'User-Agent'=>'Faraday v0.8.6'}).
          to_return(:status => 200, :body => "", :headers => {})
-      Gist.delete('282322', LOGIN)
+      gist = Gist.new(gist_attributes)
+      gist.delete(LOGIN)
       stub.should have_been_requested      
     end 
   end

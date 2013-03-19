@@ -1,10 +1,11 @@
 class Gist
-  attr_reader :url, :id, :filename, :description
+  attr_reader :url, :id, :filename, :description, :content
   def initialize(attributes)
     @url = attributes['url']
     @id = attributes['id']
     @filename = attributes['files'].keys.first
     @description = attributes['description']
+    @content = attributes['content']
   end
 
   def self.create(gist, login)
@@ -28,9 +29,9 @@ class Gist
     end
   end
 
-  def self.delete(id, login)
+  def delete(login)
     post_response = Faraday.delete do |request|
-      request.url "https://api.github.com/gists/#{id}"
+      request.url "https://api.github.com/gists/#{@id}"
       request.headers['Authorization'] = "Basic " + Base64.encode64("#{login[:username]}:#{login[:password]}")
     end
   end
